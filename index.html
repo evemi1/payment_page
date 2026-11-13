@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Оплата услуг</title>
+  <style>
+    :root { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; color:#202124; background:#f7f8fa; font-synthesis:none; }
+    *{box-sizing:border-box}body{margin:0;min-height:100vh}button,input{font:inherit}button{cursor:pointer}
+    .top{background:white;border-bottom:1px solid #ebedf0;padding:19px 22px}.top-inner{max-width:760px;margin:auto;display:flex;align-items:center;gap:11px;font-weight:700;font-size:17px}.mark{width:31px;height:31px;background:#111827;color:white;border-radius:10px;display:grid;place-items:center;font-size:18px}
+    main{max-width:760px;margin:34px auto;padding:0 16px 45px}.intro{margin-bottom:23px}.intro h1{font-size:30px;letter-spacing:-.6px;margin:0 0 7px}.intro p{color:#717784;font-size:14px;margin:0}
+    .panel{background:#fff;border:1px solid #e8ebee;border-radius:18px;padding:26px;margin-bottom:16px;box-shadow:0 3px 19px #12182708}h2{font-size:17px;margin:0 0 20px;letter-spacing:-.2px}.service{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 0;border-top:1px solid #f0f1f3}.service:first-of-type{border-top:none;padding-top:0}.service:last-of-type{padding-bottom:0}.service-info{display:flex;align-items:flex-start;gap:11px;min-width:0;flex:1}.service-check{width:19px;height:19px;accent-color:#1f2937;margin-top:2px;cursor:pointer;flex-shrink:0}.service-name{font-size:14px;font-weight:600;line-height:1.4}.price{color:#7c828d;font-size:12px;margin-top:4px}.qty{display:flex;align-items:center;border:1px solid #e3e6ea;border-radius:10px;height:37px;overflow:hidden;flex-shrink:0}.qty button{border:0;background:white;width:34px;height:36px;font-size:19px;color:#333}.qty button:disabled{color:#c7cbd0;cursor:not-allowed}.qty button:focus-visible,.method:focus-visible,.continue:focus-visible,input:focus-visible{outline:2px solid #5685ef;outline-offset:2px}.qty output{min-width:27px;text-align:center;font-size:14px;font-variant-numeric:tabular-nums}
+    .summary{border-top:1px solid #edf0f2;margin-top:21px;padding-top:20px;display:flex;align-items:center;justify-content:space-between;font-size:16px;font-weight:700}.summary strong{font-size:26px;letter-spacing:-.6px;font-variant-numeric:tabular-nums}.hint{color:#818894;font-size:12px;margin-top:8px}
+    .methods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.method{border:1px solid #e5e8ed;border-radius:12px;background:white;padding:15px 10px;min-height:95px;text-align:left;display:flex;flex-direction:column;justify-content:center;gap:10px}.method.active{border:2px solid #222b39;background:#fafbfc;padding:14px 9px}.method .symbol{display:inline-flex;align-items:center;justify-content:center;width:33px;height:33px;border-radius:9px;background:#f0f2f5;font-weight:800;font-size:16px}.method .method-name{font-size:13px;font-weight:650}.method small{font-size:11px;color:#7c828d}
+    label.phone-label{display:block;font-size:13px;font-weight:600;margin-bottom:9px}.phone{width:100%;height:49px;border:1px solid #e2e6eb;border-radius:11px;padding:0 14px;font-size:15px;background:white}.phone-help{font-size:12px;color:#7a818c;margin:9px 0 0}.continue{display:block;background:#202630;border:0;color:#fff;width:100%;border-radius:12px;height:53px;font-weight:700;font-size:15px;margin-top:20px;cursor:pointer;opacity:1}.footer-note{font-size:11px;text-align:center;color:#848b96;margin:13px 0 0;line-height:1.5}
+    .loading-screen{position:fixed;inset:0;background:#fff;z-index:100;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px}
+    .loading-screen.visible{display:flex}
+    .loading-spinner{width:58px;height:58px;border:4px solid #edf0f4;border-top-color:#202630;border-radius:50%;animation:spin .85s linear infinite;margin-bottom:28px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-title{font-size:23px;font-weight:700;letter-spacing:-.4px;margin:0 0 9px}
+    .loading-subtitle{font-size:14px;color:#7a818c;margin:0 0 22px}
+    .loading-warning{font-size:12px;color:#969ca6;margin:0;max-width:330px;line-height:1.5}
+    @media(prefers-reduced-motion:reduce){.loading-spinner{animation-duration:2.5s}}
+    @media(max-width:600px){main{margin-top:26px}.intro h1{font-size:26px}.panel{padding:20px}.methods{grid-template-columns:1fr}.method{min-height:67px;flex-direction:row;justify-content:flex-start;align-items:center}.method small{margin-left:auto}.service-name{font-size:13px}.qty button{width:30px}.summary strong{font-size:23px}}
+  </style>
+</head>
+<body>
+  <header class="top"><div class="top-inner"><span class="mark" aria-hidden="true">₽</span><span>Оплата услуг</span></div></header>
+  <main>
+    <section class="intro"><h1>Оформление заказа</h1><p>Выберите необходимые услуги и удобный способ оплаты.</p></section>
+    <section class="panel" aria-labelledby="services-title">
+      <h2 id="services-title">Услуги</h2>
+      <div id="services"></div>
+      <div class="summary"><span>Итого</span><strong id="total" aria-live="polite">0 ₽</strong></div>
+      <p class="hint">Для услуги «Редакция вашей карты» количество означает число часов.</p>
+    </section>
+    <section class="panel" aria-labelledby="payment-title">
+      <h2 id="payment-title">Способ оплаты</h2>
+      <div class="methods" role="radiogroup" aria-label="Способ оплаты">
+        <button type="button" class="method active" role="radio" aria-checked="true" data-method="СБП"><span class="symbol">₽</span><span class="method-name">СБП</span><small>По номеру телефона</small></button>
+        <button type="button" class="method" role="radio" aria-checked="false" data-method="Банковская карта"><span class="symbol">▣</span><span class="method-name">Банковская карта</span><small>Visa / Mastercard / Мир</small></button>
+        
+      </div>
+    </section>
+    <section class="panel" aria-labelledby="phone-title">
+      <h2 id="phone-title">Контактные данные</h2>
+      <label for="phone" class="phone-label">Номер телефона</label>
+      <input id="phone" class="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (999) 999-99-99" maxlength="20" />
+      <p class="phone-help">Телефон указывается для связи по заказу. Не вводите здесь данные банковской карты.</p>
+      <button type="button" class="continue" id="checkout">Продолжить к оплате</button>
+      <p class="footer-note" id="payment-message" role="status">Выбранный способ оплаты будет доступен после подключения платёжного сервиса.</p>
+    </section>
+  </main>
+  <section class="loading-screen" id="loading-screen" role="status" aria-live="polite" aria-label="Ожидание платёжного сервиса">
+    <div class="loading-spinner" aria-hidden="true"></div>
+    <h2 class="loading-title">Подключение к оплате</h2>
+    <p class="loading-subtitle">Ожидание ответа платёжного сервиса...</p>
+    <p class="loading-warning">Платёж ещё не создан. Деньги не списаны.</p>
+  </section>
+  <script>
+    const services = [
+      {name:'Распечатать карту',unit:'шт.',price:2000,qty:0},
+      {name:'Редакция вашей карты',unit:'час',price:1000,qty:0},
+      {name:'Скинуться на бумагу',unit:'взнос',price:500,qty:0},
+      {name:'Распечатать до 10 листов',unit:'заказ',price:100,qty:0},
+      {name:'Распечатать до 25 листов',unit:'заказ',price:200,qty:0}
+    ];
+    const fmt = n => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
+    const holder = document.getElementById('services');
+    function render(){
+      holder.innerHTML='';
+      services.forEach((s,i)=>{
+        const row=document.createElement('div');row.className='service';
+        const info=document.createElement('div'); info.className='service-info';
+        const check=document.createElement('input');check.type='checkbox';check.className='service-check';check.checked=s.qty>0;check.setAttribute('aria-label',s.name);check.addEventListener('change',()=>{s.qty=check.checked?1:0;render()});
+        const desc=document.createElement('div');const title=document.createElement('div');title.className='service-name';title.textContent=s.name;const price=document.createElement('div');price.className='price';price.textContent=fmt(s.price)+' / '+s.unit;desc.append(title,price);info.append(check,desc);
+        const ctrl=document.createElement('div');ctrl.className='qty';ctrl.setAttribute('aria-label','Количество: '+s.name);
+        const minus=document.createElement('button');minus.type='button';minus.textContent='−';minus.disabled=s.qty===0;minus.setAttribute('aria-label','Уменьшить');minus.addEventListener('click',()=>{s.qty=Math.max(0,s.qty-1);render()});
+        const count=document.createElement('output');count.textContent=s.qty;
+        const plus=document.createElement('button');plus.type='button';plus.textContent='+';plus.setAttribute('aria-label','Увеличить');plus.addEventListener('click',()=>{s.qty=Math.min(999,s.qty+1);render()});ctrl.append(minus,count,plus);row.append(info,ctrl);holder.append(row);
+      });
+      document.getElementById('total').textContent=fmt(services.reduce((sum,s)=>sum+s.price*s.qty,0));
+    }
+    render();
+    document.querySelectorAll('.method').forEach(button=>button.addEventListener('click',()=>{
+      document.querySelectorAll('.method').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-checked','false')});
+      button.classList.add('active');button.setAttribute('aria-checked','true');
+    }));
+    document.getElementById('checkout').addEventListener('click',()=>{
+      const message=document.getElementById('payment-message');
+      if(!services.some(s=>s.qty>0)){
+        message.textContent='Сначала выберите хотя бы одну услугу.';
+        return;
+      }
+      const phone=document.getElementById('phone').value.trim();
+      if(phone && !/^(?:\+?7|8)[\s()\-\d]{10,17}$/.test(phone)){
+        message.textContent='Проверьте номер телефона.';
+        return;
+      }
+      document.getElementById('loading-screen').classList.add('visible');
+      document.body.style.overflow='hidden';
+    });
+  </script>
+</body>
+</html>
